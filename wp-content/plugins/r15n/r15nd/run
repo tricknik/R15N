@@ -1,0 +1,132 @@
+#!/usr/bin/php -q
+<?php
+$_SERVER['HTTP_HOST'] = 'localhost';
+$_SERVER['SERVER_PROTOCOL'] = 'HTTP';
+require_once('/srv/http/r15n/wp-load.php');
+
+R15Nd::init();
+
+class R15Nd {
+
+  public static function E164($number) {
+    return $number;
+    if (preg_match('/^(:?+)(/d)*$/', $number), $matches) {
+      return $matches[1];
+    } else {
+      return null;
+    }
+  }
+
+  public static function get_caller($callee, $community_list) {
+    global $wpdb;
+    $calls_table = "{$wpdb->prefix}calls";
+    $messages_table = "{$wpdb->prefix}messages";
+    $user_scoreboard_table = "{$wpdb->prefix}user_scoreboard";
+    $list = join(", ", $community_list);
+    $sql = <<<SQL
+SELECT c.message_id, c.callee_user_id, s.locked, count(c.callee_user_id) as counter
+  FROM {$calls_table} AS c
+  JOIN {$messages_table} AS m ON c.message_id = m.ID
+    AND m.community_id IN ({$list})
+    AND m.ID NOT IN
+      (SELECT l.message_id FROM {$calls_table} as l
+        WHERE l.callee_user_id = {$callee})
+  LEFT OUTER JOIN {$calls_table} as r ON c.callee_user_id = r.caller_user_id
+    and c.message_id = r.message_id
+  lEFT OUTER JOIN {$user_scoreboard_table} as s ON c.callee_user_id = s.user_id
+  GROUP BY c.message_id, c.callee_user_id
+  HAVING counter < 2
+    AND c.callee_user_id > 0
+    AND (s.locked = 0 OR s.locked is NULL)
+  ORDER BY m.initiated, s.score desc
+  LIMIT 1;
+SQL;
+
+    file_put_contents('/tmp/r15nsql', $sql);
+    sleep(1); 
+    $r = $wpdb->get_results($sql);
+    $c = ($r) ? $r[0] : null;
+    return $c;
+  }
+
+  public static function get_communities() {
+    global $wpdb;
+    $communities_table = "{$wpdb->prefix}communities";
+    $sql = <<<SQL
+SELECT ID, community FROM {$communities_table};
+SQL;
+  
+    return $wpdb->get_results($sql);
+  }
+
+  public static function get_users($p, $limit) {
+    global $wpdb;
+    $user_scoreboard_table = "{$wpdb->prefix}user_scoreboard";
+    $sql = <<<SQL
+SELECT u.ID, s.score FROM {$wpdb->users} as u
+  LEFT OUTER JOIN {$user_scoreboard_table} as s ON u.ID = s.user_id
+  WHERE u.ID < %d
+  ORDER BY ID desc
+  LIMIT %d;
+SQL;
+    $q = $wpdb->prepare($sql, $p, $limit);
+    return $wpdb->get_results($q);
+  }
+
+  const CHUNK = 12;
+
+  public static function init() {
+    do {
+      $p = 999999999;
+      $go = true;
+      $communities = self::get_communities();
+      do {
+        $r = self::get_users($p, self::CHUNK);
+        shuffle($r);
+        if ($r) {
+          foreach($r as $row) {
+            sleep(1);
+            $p = ($row->ID < $p) ? $row->ID : $p;
+            $user = new WP_User($row->ID); 
+            $ticklog = array();
+            $ticklog[] = 'v0.7 | tick: ' . time() . ' | user:' . $user->user_nicename . ' | ID: ' . $user->ID . ' | Active: ' . $user->active;
+            $community_list = array();
+            $active = ($user->active == 'yes') ? true : false;
+            if ($active && isset($user->phone_number) && !empty($user->phone_number)) {
+              foreach($communities as $c) {
+                if (!(user_can($user, 'administrator')) && (user_can($user, $c->community))) {
+                  $community_list[] = $c->ID;
+                }
+              }
+              if ($community_list) {
+                $ticklog[] = 'Communities: ' . join(', ', $community_list);
+                $call = self::get_caller($user->ID, $community_list);
+                if ($call) {
+                  $req = array();
+                  $req[]  = "http://r15n:h3ll0@r15n.net:9999/webapi/jsrun?r15n.js";
+                  $caller = new WP_User($call->callee_user_id);
+                  $req[] = $call->message_id;
+                  $req[] = $caller->ID;
+                  $req[] = self::E164($caller->phone_number);
+                  $req[] = $user->ID;
+                  $req[] = self::E164($user->phone_number);
+                  $ticklog[] = join(' ', $req) . "\n";
+                  file_put_contents('/tmp/r15ntick',utf8_encode( join("\n", $ticklog)));
+                  JessyCom::update_user_scoreboard($caller->ID, 0);
+                  JessyCom::update_user_scoreboard($user->ID, 1);
+                  $ticklog[] = file_get_contents(join('%20', $req)). "\n";
+                  sleep(60);
+                } else {
+                  $ticklog[] = "No callers available";
+                }
+              }
+            }
+            file_put_contents('/tmp/r15ntick', utf8_encode(join("\n", $ticklog)));
+          }
+        } else {
+          $go = false;
+        }
+      } while ($go);
+    } while (false);
+  }
+}
