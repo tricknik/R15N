@@ -8,15 +8,18 @@ var caller_number = argv[2];
 var callee_id = argv[3];
 var callee_number = argv[4];
 
-var caller_prefix = "{ignore_early_media=ring_ready,origination_caller_id_name='R15N',origination_caller_id_number=491632866163}";
-var callee_prefix = "{ignore_early_media=false,origination_caller_id_name='R15N',origination_caller_id_number=491632866163}";
+var caller_prefix = "{ignore_early_media=ring_ready,origination_caller_id_name='R15N',origination_caller_id_number=" + callee_number + "}";
+var callee_prefix = "{ignore_early_media=false,origination_caller_id_name='R15N',origination_caller_id_number=" + caller_number + "}";
 
-//var RE_DOMESTIC = /^1[2-9][0-9]+$/;
-//caller_dial = (RE_DOMESTIC.test(caller_number)) ? caller_number : "011" + caller_number;
-//callee_dial = (RE_DOMESTIC.test(callee_number)) ? callee_number : "011" + callee_number;
+//var RE_DOMESTIC = /^1[2-9][0-9]{9}+$/;
+//caller_number = (RE_DOMESTIC.test(caller_number)) ? caller_number : "011" + caller_number;
+//callee_number = (RE_DOMESTIC.test(callee_number)) ? callee_number : "011" + callee_number;
+//var path = "sofia/gateway/sip.voicenetwork.ca/";
 
-var caller_dial = caller_prefix + "sofia/gateway/sip.rapidvox.com/00" + caller_number;
-var callee_dial = callee_prefix + "sofia/gateway/sip.rapidvox.com/00" + callee_number;
+var path = "sofia/gateway/sip.rapidvox.com/";
+
+var caller_dial = caller_prefix + path + caller_number;
+var callee_dial = callee_prefix + path + callee_number;
 
 var duration = 0;
 var acause = 'UNINITIATED';
@@ -25,19 +28,15 @@ var bcause = 'UNINITIATED';
 var caller = new Session(caller_dial);
 while(caller.ready()) {
   console_log('console', "caller " + caller.state);
-  caller.streamFile('jessycom.wav');
   caller.execute("sched_hangup", "+300 ALLOTTED_TIMEOUT");
-  caller.setVariable("campon", true);
-  caller.setVariable("campon_retries", 0);
   caller.setVariable("bridge_early_media", true);
   caller.setVariable("bypass_media_after_bridge", true);
   caller.setVariable("bridge_generate_comfort_noise", true);
-  //caller.setVariable("bridge_pre_execute_bleg_app", "playback r15n.wav");
   caller.setVariable("hangup_after_bridge", true);
+  caller.streamFile('r15nsting.wav');
   var start = Date.now();
   var callee = new Session(callee_dial);
   while(callee.ready()) {
-    console_log('console', "callee " + callee.state);
     bridge(caller, callee);
     bcause = caller.getVariable('bridge_hangup_cause');
   }
