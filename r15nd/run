@@ -9,8 +9,7 @@ R15Nd::init();
 class R15Nd {
 
   public static function E164($number) {
-    return $number;
-    if (preg_match('/^(:?+)(/d)*$/', $number), $matches) {
+    if (preg_match('/^\+?(?:00)?([1-9]\d{10,14})$/i', $number, $matches)) {
       return $matches[1];
     } else {
       return null;
@@ -89,7 +88,7 @@ SQL;
             $p = ($row->ID < $p) ? $row->ID : $p;
             $user = new WP_User($row->ID); 
             $ticklog = array();
-            $ticklog[] = 'v0.7 | tick: ' . time() . ' | user:' . $user->user_nicename . ' | ID: ' . $user->ID . ' | Active: ' . $user->active;
+            $ticklog[] = 'v0.8 | tick: ' . time() . ' | user:' . $user->user_nicename . ' | number: ' . self::E164($user->phone_number) . ' | Active: ' . $user->active;
             $community_list = array();
             $active = ($user->active == 'yes') ? true : false;
             if ($active && isset($user->phone_number) && !empty($user->phone_number)) {
@@ -98,8 +97,8 @@ SQL;
                   $community_list[] = $c->ID;
                 }
               }
+              $ticklog[] = 'Communities: ' . join(', ', $community_list);
               if ($community_list) {
-                $ticklog[] = 'Communities: ' . join(', ', $community_list);
                 $call = self::get_caller($user->ID, $community_list);
                 if ($call) {
                   $req = array();

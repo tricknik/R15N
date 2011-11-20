@@ -1,9 +1,9 @@
 <?php
 
 require_once('../../../wp-load.php');
-JessyComReport::init();
+R15NReport::init();
 
-class JessyComReport {
+class R15NReport {
 
   public static function add_call_detail($anumber, $bnumber, $duration, $acause, $bcause) {
     global $wpdb;
@@ -50,8 +50,8 @@ class JessyComReport {
       $valid = array('NONE' => true, 'ALLOTTED_TIMEOUT' => true, 'CALL_REJECTED' => true, 'NORMAL_CLEARING' => true);
       $caller_id = $_GET['caller'];
       $callee_id = $_GET['callee'];
-      JessyCom::update_user_scoreboard($caller_id, 0, $call_detail_id);
-      JessyCom::update_user_scoreboard($callee_id, 1, $call_detail_id);
+      R15N::update_user_scoreboard($caller_id, 0, $call_detail_id);
+      R15N::update_user_scoreboard($callee_id, 1, $call_detail_id);
       if (isset($valid[$acause])) { 
         $message_id = $_GET['message'];
         if ($bcause != 'NORMAL_CLEARING' || $duration < 5000) {
@@ -59,7 +59,7 @@ class JessyComReport {
         }
         self::add_call($call_detail_id, $message_id, $caller_id, $callee_id);
       }
-      print "[ #* JessyCom Call:" . " caller " . $caller_id;
+      print "[ #* R15N Call:" . " caller " . $caller_id;
       print " callee " . $callee_id;
       print " message " . $message_id . ']';
     } else {
