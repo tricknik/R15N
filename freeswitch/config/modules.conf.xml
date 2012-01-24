@@ -1,0 +1,29 @@
+<configuration name="modules.conf" description="Modules">
+  <modules>
+    
+    <load module="mod_console"/>
+    <load module="mod_logfile"/>
+
+    <load module="mod_xml_rpc"/> 
+    <load module="mod_xml_cdr"/>
+
+    <load module="mod_sofia"/>
+    <load module="mod_commands"/>
+    <load module="mod_dptools"/>
+    <load module="mod_esf"/>
+
+    <load module="mod_dialplan_xml"/>
+
+    <!-- <load module="mod_g723_1"/> 
+    <load module="mod_g729"/> -->
+
+    <load module="mod_sndfile"/>
+    <load module="mod_native_file"/>
+    <load module="mod_tone_stream"/>
+
+    <load module="mod_spidermonkey"/>
+    <!-- <load module="mod_spidermonkey_curl"/> 
+    <load module="mod_tts"/> 
+    <load module="mod_say_en"/> -->
+  </modules>
+</configuration>

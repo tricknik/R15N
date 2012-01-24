@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<document type="freeswitch/xml">
+  <!-- general configuration -->
+  <X-PRE-PROCESS cmd="set" data="domain=r15n.net"/>
+  <X-PRE-PROCESS cmd="set" data="bind_server_ip=auto"/>
+  <X-PRE-PROCESS cmd="set" data="console_loglevel=4"/>
+  <X-PRE-PROCESS cmd="set" data="unroll_loops=true"/>
+
+  <section name="configuration" description="Various Configuration">
+    <!-- module configuration -->    
+    <X-PRE-PROCESS cmd="include" data="config/modules.conf.xml"/>
+    <X-PRE-PROCESS cmd="include" data="config/switch.conf.xml"/>
+    <X-PRE-PROCESS cmd="include" data="config/logfile.conf.xml"/>
+    <X-PRE-PROCESS cmd="include" data="config/console.conf.xml"/>    
+    <X-PRE-PROCESS cmd="include" data="config/sofia.conf.xml"/> 
+    <X-PRE-PROCESS cmd="include" data="config/spandsp.conf.xml"/> 
+    <X-PRE-PROCESS cmd="include" data="config/spidermonkey.conf.xml"/>    
+    <X-PRE-PROCESS cmd="include" data="config/xml_rpc.conf.xml"/> 
+    <X-PRE-PROCESS cmd="include" data="config/xml_cdr.conf.xml"/>
+  </section>
+
+  <section name="dialplan" description="Regex/XML Dialplan">
+    <context name="public">
+      <extension name="transmediale2012">
+        <condition field="network_addr" expression="^217.10.79.9$">
+          <action application="javascript" data="incomming.js"/>
+        </condition>
+      </extension>
+    </context>
+  </section>
+
+</document>
+
+

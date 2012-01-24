@@ -1,0 +1,23 @@
+<configuration name="sofia.conf" description="sofia Endpoint">
+  <profiles>
+    <profile name="default" domain="$${domain}">
+      <settings>
+        <param name="context" value="public"/>
+        <param name="user-agent-string" value="freeswitch"/> 
+        <param name="sip-trace" value="no"/>
+        <param name="inbound-codec-negotiation" value="scrooge"/>
+        <param name="inbound-codec-prefs" value="GSM,G722,PCMU,PCMA"/>
+        <param name="outbound-codec-prefs" value="GSM,G722,PCMU,PCMA"/>
+        <param name="disable-transcoding" value="true"/>
+      </settings>
+      <gateways>
+        <gateway name="XXXXX">
+          <param name="realm" value="XXXXX"/>
+          <param name="username" value="XXXXX"/>
+          <param name="password" value="XXXXX"/>
+          <param name="extension" value="transmediale2012"/>
+        </gateway>
+      </gateways>
+    </profile>
+  </profiles>
+</configuration>

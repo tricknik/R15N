@@ -216,6 +216,7 @@ nav#pages li a {
 
 nav#pages li a:hover, .pages a:active {
   text-decoration: none;
+  background-color: #5C5C5C;
   border-color: rgb(158,158,158);
   -webkit-box-shadow: inset 0 0 8px rgba(0,0,0, 0.38);
   -moz-box-shadow: inset 0 0 8px rgba(0,0,0, 0.38);
@@ -312,7 +313,7 @@ nav.sidebar a {
 nav.sidebar a:hover {
   text-decoration: none;
   border-top-color: #de260e;
-  background: #de260e;
+  background: #B21E0B;
   color: #ffffdb;
 }
 
@@ -383,7 +384,7 @@ img.alignright {
 
 .button, .button:visited {
   display: inline-block; 
-  color: #de260e; 
+  color: white; 
   text-align: center;
   text-decoration: none;
   font-weight: bolder;
@@ -400,5 +401,5 @@ img.alignright {
   padding: 8px 14px 9px;
   background-color: #de260e;
 }
-.button:hover { background-color: #de260e; color: #fff; }
+.button:hover { background-color: #B21E0B; color: #fff; }
 .button:active { top: 1px; }

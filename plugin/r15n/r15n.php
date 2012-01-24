@@ -1,10 +1,10 @@
 <?php
 /*
 Plugin Name: R15N
-Plugin URI: http://r15n.co.il
+Plugin URI: http://r15n.net
 Description: R15N Community Telephone System
 Version: 0.1
-AuthorDmytri Kleiner
+Author: Dmytri Kleiner
 Author URI: http://dmytri.info
 */
 
@@ -231,6 +231,10 @@ SQL;
 
   static public function toggle_activation_url() {
     return content_url('/plugins/r15n/activation.php');
+  }
+
+  static public function is_open($cap='') {
+    return true;
   }
 
   static public function is_active() {
@@ -561,6 +565,7 @@ class R15NSetup {
 CREATE TABLE %s (
   ID smallint UNSIGNED NOT NULL AUTO_INCREMENT,
   community VARCHAR(55) NOT NULL,
+  locked boolean DEFAULT 0 NOT NULL, 
   PRIMARY KEY  (ID),
   UNIQUE KEY community (community)
 );

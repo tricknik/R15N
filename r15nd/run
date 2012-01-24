@@ -1,4 +1,4 @@
-!/usr/bin/php -q
+#!/usr/bin/php -q
 <?php
 $_SERVER['HTTP_HOST'] = 'localhost';
 $_SERVER['SERVER_PROTOCOL'] = 'HTTP';
@@ -88,7 +88,7 @@ SQL;
             $p = ($row->ID < $p) ? $row->ID : $p;
             $user = new WP_User($row->ID); 
             $ticklog = array();
-            $ticklog[] = 'v0.8 | tick: ' . time() . ' | user:' . $user->user_nicename . ' | number: ' . self::E164($user->phone_number) . ' | Active: ' . $user->active;
+            $ticklog[] = 'v0.9 | tick: ' . time() . ' | user:' . $user->user_nicename . ' | number: ' . self::E164($user->phone_number) . ' | Active: ' . $user->active;
             $community_list = array();
             $active = ($user->active == 'yes') ? true : false;
             if ($active && isset($user->phone_number) && !empty($user->phone_number)) {
@@ -102,7 +102,7 @@ SQL;
                 $call = self::get_caller($user->ID, $community_list);
                 if ($call) {
                   $req = array();
-                  $req[]  = "http://user:pass@r15n.net:9999/webapi/jsrun?r15n.js";
+                  $req[]  = "XXXXX?r15n.js";
                   $caller = new WP_User($call->callee_user_id);
                   $req[] = $call->message_id;
                   $req[] = $caller->ID;

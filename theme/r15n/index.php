@@ -54,7 +54,7 @@ const OVERLAY_TOP_HTML = <<<HTML
   <div id="overlay">
     <div id="sash">
       <div class="logo">
-<img src="/images/r15n.gif" />
+<img src="/images/jessylogo.png" />
       </div>
       <section>
 <h3>%s</h3>
