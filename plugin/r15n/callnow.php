@@ -52,8 +52,6 @@ SQL;
   }
 
   public static function init() {
-    wp_redirect(R15N::call_initiated_url($call_id));
-    return false;
     $cap = (isset($_REQUEST['capability'])) ? $_REQUEST['capability'] : 'call_test';
     $open = (isset($_REQUEST['open'])) ? $_REQUEST['open'] : '18:00';
     $close = (isset($_REQUEST['close'])) ? $_REQUEST['close'] : '21:00';

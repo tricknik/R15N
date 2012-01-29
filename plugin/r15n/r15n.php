@@ -1,10 +1,10 @@
 <?php
 /*
 Plugin Name: R15N
-Plugin URI: http://r15n.net
+Plugin URI: http://r15n.co.il
 Description: R15N Community Telephone System
 Version: 0.1
-Author: Dmytri Kleiner
+AuthorDmytri Kleiner
 Author URI: http://dmytri.info
 */
 
@@ -119,10 +119,17 @@ class R15N {
 
   static public function call_button($att, $content) {
     $cap = (isset($att['capability'])) ? $att['capability'] : 'call_r15n';
-    if (self::is_active() && current_user_can($cap)) {
-      return sprintf(self::CALL_BUTTON_HTML,
-        add_query_arg('capability', $cap, content_url() . '/plugins/r15n/callnow.php'),
-        __('Call Now!')
+    if (self::is_available() && self::is_open()) {
+      if (self::is_active() && current_user_can($cap)) {
+        return sprintf(self::CALL_BUTTON_HTML,
+          add_query_arg('capability', $cap, content_url() . '/plugins/r15n/callnow.php'),
+          __('Call Now!')
+        );
+      }
+    } else {
+      $label = self::is_open() ? 'Currently Busy. Try Later' : 'System Closed. Try Tomorrow';
+      return sprintf(self::INACTIVE_BUTTON_HTML,
+        __($label)
       );
     }
   }
@@ -233,8 +240,30 @@ SQL;
     return content_url('/plugins/r15n/activation.php');
   }
 
-  static public function is_open($cap='') {
-    return true;
+  static public function is_open() {
+    $date = getdate();
+    $hours = $date['hours'];
+    $open = ($hours > 13 && $hours < 19);
+    if ($open || current_user_can('call_anytime')) {
+      return true;
+    } else {
+      return false;
+    } 
+  }
+
+  static public function is_available() {
+    global $wpdb;
+    $sql = <<<SQL
+SELECT initiated FROM wp_messages ORDER BY ID DESC LIMIT 1;
+SQL;
+    $date = $wpdb->get_var($sql);
+    $last = strtotime($date);
+    $available = (7200 < (time() - $last));
+    if ($available || current_user_can('call_anytime')) {
+      return true;
+    } else {
+      return false;
+    } 
   }
 
   static public function is_active() {
@@ -392,6 +421,12 @@ HTML;
   <li><a href="%s">%s</a></li>
 </ul>
 </nav>
+HTML;
+
+  const INACTIVE_BUTTON_HTML = <<<HTML
+<div class="call">
+  <a class="button" href="/unavailable">%s</a>
+</div>
 HTML;
 
   const CALL_BUTTON_HTML = <<<HTML
