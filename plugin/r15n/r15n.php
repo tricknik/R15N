@@ -386,6 +386,10 @@ SQL;
       array_push($format, '%d');
     }
 
+    if (user_can($user_id, 'call_leafnode') {
+      $values['score'] = 0;
+    }
+
     if ($user_scoreboard) {
       $wpdb->update($user_scoreboard_table, $values, array('user_id' => $user_id), $format, array('%d'));
     } else {
