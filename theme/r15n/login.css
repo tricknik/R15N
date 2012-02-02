@@ -1,0 +1,54 @@
+body {
+    background-color: #2F2F1F !important;
+}
+.login h1 {
+    background-color: #FEFEDA;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    top: 0;
+    height: 100px;
+    padding-top: 20px;
+    -webkit-box-shadow: 5px 5px 10px #666;
+    box-shadow: 5px 5px 10px #666;
+}
+.login h1 a {
+    width: 900px;
+    margin: auto;
+    text-align: left;
+    background-position: left;
+}
+#login {
+    width: 100%;
+    margin-top: 30px;
+}
+
+#loginform, #lostpasswordform, #registerform, .message, #login_error {
+    width: 500px;
+    border: none;
+    margin: auto;
+    background-color: #FEFEDA;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+.message, #login_error {
+    margin: auto !important;
+    width: 520px;
+    margin-bottom: 20px !important;
+}
+.login #nav, .login #backtoblog {
+    width: 540px;
+    margin: auto;
+    text-align: left;
+    color: #fff;
+    padding: 5px !important;
+
+}
+.login #nav a, .login #backtoblog a {
+    text-shadow: none;
+    -webkit-text-shadow: none;
+    color: #fff !important;
+}
+.indicator-hint {
+    clear: both;
+}

@@ -122,13 +122,6 @@ public static function render() {
   );
   dynamic_sidebar('primary');
   print self::END_PAGE_HTML;
-  printf(self::OVERLAY_TOP_HTML,
-    __('Sorry, R15N is currently closed.'),
-    __('Launching August 2nd!')
-  );
-  printf(self::OVERLAY_BOTTOM_HTML,
-    __('hide this')
-  );
   print self::END_HTML;
 }
 

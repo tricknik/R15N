@@ -35,6 +35,7 @@ public static function init() {
   $dir = self::dir();
   add_action('login_head', function() use ($style, $dir) {
     printf($style,
+      home_url() .'/wp-content/themes/r15n/login.css',
       $dir,
       home_url() . '/images/r15n-logo.gif'
     );
@@ -50,6 +51,7 @@ public static function dir() {
 }
 
 const ADMIN_STYLE = <<< STYLE
+<link rel="stylesheet" id="login-css" href="%s" type="text/css" media="all">
 <style type="text/css">
 h1, h1 a, h1 img { height: 80px; width: 205px; margin: 0; padding: 0; border: 0;}
 body {
@@ -62,10 +64,10 @@ h1 {
   top: 30px;
   align:center;
 }
-h1 a { 
+.login h1 a { 
   background-image:url(%s);
 }
-    </style>'
+    </style>
 STYLE;
 
 /* ENDCLASS */ };
