@@ -70,6 +70,7 @@ const OVERLAY_BOTTOM_HTML = <<<HTML
 HTML;
 
 const END_HTML = <<<HTML
+<?php wp_footer(); ?>
 </body>
 </html>
 HTML;
