@@ -8,11 +8,11 @@ var caller_number =  argv[2];
 var callee_id = argv[3];
 var callee_number = argv[4];
 
-var r15n_inbound = "49308687035761";
+var r15n_inbound = "493022487480";
 var path = "sofia/default/0011103";
 
-var caller_prefix = "{originate_timeout=12,ignore_early_media=true,origination_caller_id_name='R15N',origination_caller_id_number=" + r15n_inbound + "}";
-var callee_prefix = "{ignore_early_media=false,origination_caller_id_name='R15N',origination_caller_id_number=" + r15n_inbound + "}";
+var caller_prefix = "{originate_timeout=45,jitterbuffer_msec=240,ignore_early_media=true,origination_caller_id_name='R15N',origination_caller_id_number=" + r15n_inbound + "}";
+var callee_prefix = "{jitterbuffer_msec=240,ignore_early_media=false,origination_caller_id_name='R15N',origination_caller_id_number=" + r15n_inbound + "}";
 
 var caller_dial = caller_prefix + path + caller_number + "@sbc.voxbeam.com";
 var callee_dial = callee_prefix + path + callee_number + "@sbc.voxbeam.com";
@@ -25,9 +25,11 @@ console_log('console', caller_dial);
 var caller = new Session(caller_dial);
 while(caller.ready()) {
   console_log('console', "caller " + caller.state);
-  //caller.setVariable("bypass_media_after_bridge", true);
+  caller.setVariable("rtp_autoflush" ,false);
+  caller.setVariable("rtp_autoflush_during_bridge" ,false);
+  caller.setVariable("sip_jitter_buffer_during_bridge", true);
   caller.setVariable("bridge_generate_comfort_noise", true);
-  caller.setVariable("call_timeout", 15);
+  caller.setVariable("call_timeout", 45);
   caller.setVariable("ringback", "/var/lib/freeswitch/sounds/r15nring.wav");
   caller.setVariable("instant_ringback", true);
   caller.setVariable("hangup_after_bridge", true);
@@ -44,7 +46,7 @@ while(caller.ready()) {
   var duration = Date.now() - start;
 }
 acause = caller.cause;
-var path = "XXXXX?";
+var path = "http://r15n.net/wp-content/plugins/r15n/callreport.php?";
 query = [];
 query.push('message=' + message_id);
 query.push('duration=' + duration);

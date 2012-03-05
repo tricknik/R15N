@@ -10,9 +10,9 @@ while(session.ready()) {
   caller_id = (RE_LOCAL.test(caller_id)) ? '49' + caller_id.substr(1) : caller_id;
   caller_id = (RE_INTERNATIONAL.test(caller_id)) ? + caller_id.substr(2) : caller_id;
   
-  session.streamFile("r15nsting.wav"); 
+  session.streamFile("r15nwelcome.wav"); 
   query = [];
-  var path = "XXXXX?";
+  var path = "http://r15n.net/wp-content/plugins/r15n/incoming.php?";
   query.push('command=' + command);
   query.push('caller=' + caller_id);
   var url = path + query.join('&');
