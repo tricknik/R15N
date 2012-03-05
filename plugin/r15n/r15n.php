@@ -4,7 +4,7 @@ Plugin Name: R15N
 Plugin URI: http://r15n.co.il
 Description: R15N Community Telephone System
 Version: 0.1
-AuthorDmytri Kleiner
+Author: Dmytri Kleiner
 Author URI: http://dmytri.info
 */
 
@@ -119,19 +119,19 @@ class R15N {
 
   static public function call_button($att, $content) {
     $cap = (isset($att['capability'])) ? $att['capability'] : 'call_r15n';
-    if (self::is_available() && self::is_open()) {
-      if (self::is_active() && current_user_can($cap)) {
+    if (self::is_active() && current_user_can($cap)) {
+      if (self::is_available() && self::is_open()) {
         return sprintf(self::CALL_BUTTON_HTML,
           add_query_arg('capability', $cap, content_url() . '/plugins/r15n/callnow.php'),
           __('Call Now!')
         );
+      } else {
+        $label = self::is_open() ? 'Currently Busy. Try Later.' : "System Closed.";
+        return sprintf(self::INACTIVE_BUTTON_HTML,
+          __($label)
+        );
       }
-    } else {
-      $label = self::is_open() ? 'Currently Busy. Try Later' : 'System Closed. Try Tomorrow';
-      return sprintf(self::INACTIVE_BUTTON_HTML,
-        __($label)
-      );
-    }
+    } 
   }
 
   static public function account_activation() {
@@ -241,9 +241,10 @@ SQL;
   }
 
   static public function is_open() {
+    return false;
     $date = getdate();
     $hours = $date['hours'];
-    $open = ($hours > 13 && $hours < 19);
+    $open = ($hours > 11 && $hours < 19);
     if ($open || current_user_can('call_anytime')) {
       return true;
     } else {
@@ -301,7 +302,11 @@ SQL;
         $attr['_wpnonce'] = wp_create_nonce('log-out');
       break;
     }
-    return add_query_arg($attr, wp_login_url());
+    if ($type == 'register') {
+      return "http://r15n.net/tm12?lang=en";
+    } else {
+      return add_query_arg($attr, wp_login_url());
+    }
   }
 
  static public function update_user_scoreboard($user_id, $bleg=false, $call_detail_id=null) {
@@ -346,7 +351,7 @@ SQL;
                 case "USER_BUSY":
                 case "NO_ANSWER":
                   $score_failure = false;
-                  $values['score'] = $user_scoreboard->score * 0.75;
+                  $values['score'] = $user_scoreboard->score * 0.50;
                   array_push($format, '%d');
                 break;
                 case "ALLOTTED_TIMEOUT":
@@ -386,7 +391,7 @@ SQL;
       array_push($format, '%d');
     }
 
-    if (user_can($user_id, 'call_leafnode') {
+    if (user_can($user_id, 'call_leafnode')) {
       $values['score'] = 0;
     }
 
@@ -405,7 +410,7 @@ SQL;
 <nav class="sidebar">
 <ul>
   <li><a href="%s">%s</a></li>
-  <li><a href="%s">%s</a></li>
+  <!-- <li><a href="%s">%s</a></li> -->
 </ul>
 </nav>
 HTML;

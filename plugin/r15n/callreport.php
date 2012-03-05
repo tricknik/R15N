@@ -47,7 +47,11 @@ class R15NReport {
       $acause = $_GET['acause'];
       $bcause = $_GET['bcause'];
       $call_detail_id = self::add_call_detail($anumber, $bnumber, $duration, $acause, $bcause);
-      $valid = array('NONE' => true, 'ALLOTTED_TIMEOUT' => true, 'CALL_REJECTED' => true, 'NORMAL_CLEARING' => true);
+      $valid = array('NONE' => true, 'ALLOTTED_TIMEOUT' => true, 
+          'CALL_REJECTED' => true, 'NORMAL_CLEARING' => true,
+          'UNALLOCATED_NUMBER' => true, 'NORMAL_TEMPORARY_FAILURE' => true,
+          'FACILITY_REJECTED' => true, 'INCOMPATIBLE_DESTINATION' => true
+      );
       $caller_id = $_GET['caller'];
       $callee_id = $_GET['callee'];
       R15N::update_user_scoreboard($caller_id, 0, $call_detail_id);

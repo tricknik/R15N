@@ -9,8 +9,8 @@ class R15NIncomming {
 
   public static function sms($to, $text) {
       $mail = Array(
-        'user:haagenti',
-        'password:aWr0nski',
+        'user:',
+        'password:',
         'api_id:3354237',
         'text:%s',
         'to:%s'
