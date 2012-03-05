@@ -4,7 +4,7 @@
     <param name="http-port" value="9999"/>
     <!-- if all 3 of the following params exist all http traffic will require auth --> 
     <param name="auth-realm" value="R15N"/>
-    <param name="auth-user" value="Revoluzer"/>
-    <param name="auth-pass" value="!.m00se"/> 
+    <param name="auth-user" value=""/>
+    <param name="auth-pass" value=""/> 
   </settings>
 </configuration>

@@ -9,7 +9,7 @@ R15Nd::init();
 class R15Nd {
 
   public static function E164($number) {
-    if (preg_match('/^\+?(?:00)?([1-9]\d{10,14})$/i', $number, $matches)) {
+    if (preg_match('/^\+?(?:00)?([1-9]\d{8,14})$/i', $number, $matches)) {
       return $matches[1];
     } else {
       return null;
@@ -21,18 +21,22 @@ class R15Nd {
     $calls_table = "{$wpdb->prefix}calls";
     $messages_table = "{$wpdb->prefix}messages";
     $user_scoreboard_table = "{$wpdb->prefix}user_scoreboard";
+    $usermeta_table = "{$wpdb->prefix}usermeta";
     $list = join(", ", $community_list);
     $sql = <<<SQL
 SELECT c.message_id, c.callee_user_id, s.locked, count(c.callee_user_id) as counter
   FROM {$calls_table} AS c
+  JOIN {$usermeta_table} AS u ON c.callee_user_id = u.user_id
+    AND u.meta_key = "active"
+    AND u.meta_value = "yes"
   JOIN {$messages_table} AS m ON c.message_id = m.ID
     AND m.community_id IN ({$list})
     AND m.ID NOT IN
       (SELECT l.message_id FROM {$calls_table} as l
         WHERE l.callee_user_id = {$callee})
-  LEFT OUTER JOIN {$calls_table} as r ON c.callee_user_id = r.caller_user_id
+  LEFT OUTER JOIN {$calls_table} AS r ON c.callee_user_id = r.caller_user_id
     and c.message_id = r.message_id
-  lEFT OUTER JOIN {$user_scoreboard_table} as s ON c.callee_user_id = s.user_id
+  lEFT OUTER JOIN {$user_scoreboard_table} AS s ON c.callee_user_id = s.user_id
   GROUP BY c.message_id, c.callee_user_id
   HAVING counter < 2
     AND c.callee_user_id > 0
@@ -72,7 +76,7 @@ SQL;
     return $wpdb->get_results($q);
   }
 
-  const CHUNK = 12;
+  const CHUNK = 60;
 
   public static function init() {
     do {
@@ -80,11 +84,17 @@ SQL;
       $go = true;
       $communities = self::get_communities();
       do {
+        #$phone  = "http://@r15n.net:9999/webapi/jsrun?r15nonsite.js%20red";
+        #$result = file_get_contents($phone);
+        #sleep(60);
+        #$phone  = "http://@r15n.net:9999/webapi/jsrun?r15nonsite.js%20orange";
+        #$result = file_get_contents($phone);
+        #sleep(60);
         $r = self::get_users($p, self::CHUNK);
         shuffle($r);
         if ($r) {
           foreach($r as $row) {
-            sleep(1);
+            sleep(10);
             $p = ($row->ID < $p) ? $row->ID : $p;
             $user = new WP_User($row->ID); 
             $ticklog = array();
@@ -102,7 +112,7 @@ SQL;
                 $call = self::get_caller($user->ID, $community_list);
                 if ($call) {
                   $req = array();
-                  $req[]  = "XXXXX?r15n.js";
+                  $req[]  = "http://Revoluzer:!.m00se@r15n.net:9999/webapi/jsrun?r15n.js";
                   $caller = new WP_User($call->callee_user_id);
                   $req[] = $call->message_id;
                   $req[] = $caller->ID;
@@ -114,7 +124,7 @@ SQL;
                   R15N::update_user_scoreboard($caller->ID, 0);
                   R15N::update_user_scoreboard($user->ID, 1);
                   $ticklog[] = file_get_contents(join('%20', $req)). "\n";
-                  sleep(60);
+                  sleep(24);
                 } else {
                   $ticklog[] = "No callers available";
                 }
