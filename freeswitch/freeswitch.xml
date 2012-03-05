@@ -26,6 +26,11 @@
           <action application="javascript" data="incomming.js"/>
         </condition>
       </extension>
+      <extension name="activate">
+        <condition>
+          <action application="javascript" data="incomming.js"/>
+        </condition>
+      </extension>
     </context>
   </section>
 
